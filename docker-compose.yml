@@ -3,10 +3,10 @@ services:
     build: .
     container_name: gateway-service
     ports:
-      - "8083:8083"
+      - "8083:8082"
     environment:
       # Puerto interno
-      - SERVER_PORT=8083
+      - SERVER_PORT=8082
       # Hostname para Eureka
       - GATEWAY_HOSTNAME=20.57.0.243
       # Dependencias externas (Eureka)

@@ -80,7 +80,7 @@ eureka:
     hostname: ${EUREKA_INSTANCE_HOSTNAME:gateway-service-gxcghec4aqgzcpfs.mexicocentral-01.azurewebsites.net}
     non-secure-port-enabled: ${EUREKA_INSTANCE_NONSECURE_PORT_ENABLED:false}
     secure-port-enabled: ${EUREKA_INSTANCE_SECURE_PORT_ENABLED:true}
-    secure-port: 443
+    secure-port: ${EUREKA_INSTANCE_SECURE_PORT:8083}
   client:
     service-url:
       defaultZone: ${EUREKA_SERVER_URL:https://eureka-service-a6b0enhtggeqgwd7.mexicocentral-01.azurewebsites.net/eureka/}
