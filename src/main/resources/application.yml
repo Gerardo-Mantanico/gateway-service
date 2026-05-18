@@ -1,0 +1,88 @@
+server:
+  port: ${SERVER_PORT:8082}
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: false # Deshabilitamos el descubrimiento automático para usar solo rutas explícitas
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        cors-configurations:
+          '[/**]':
+            allowed-origin-patterns: ${CORS_ALLOWED_ORIGINS:*}
+            allowed-methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - PATCH
+            allowed-headers: "*"
+            allow-credentials: true
+            max-age: 3600
+      default-filters:
+        - AddRequestHeader=X-Internal-Gateway, ${app.gateway.secret:my-super-secret-value}
+      routes:
+        # ── AUTH-SERVICE ──────────────────────────────────────────────────
+        - id: auth-service-login
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - RewritePath=/api/auth/(?<segment>.*), /api/v1/auth/${segment}
+
+        # ── MS-CONGRESO ───────────────────────────────────────────────────
+        - id: ms-congreso
+          uri: lb://MS-CONGRESO
+          predicates:
+            - Path=/api/v1/congreso/**
+
+        # ── MS-ACTIVITIES ─────────────────────────────────────────────────
+        - id: ms-activities
+          uri: lb://MS-ACTIVITIES
+          predicates:
+            - Path=/api/v1/actividades/**
+
+        # ── MS-PONENCIAS ──────────────────────────────────────────────────
+        - id: ms-ponencias
+          uri: lb://MS-PONENCIAS
+          predicates:
+            - Path=/api/v1/ponencias/**, /api/v1/convocatorias/**, /api/v1/evaluaciones/**, /api/v1/estados-ponencia/**
+
+        # ── MS-ASISTENCIAS-CERTIFICADOS ───────────────────────────────────
+        - id: ms-asistencias
+          uri: lb://MS-ASISTENCIAS-CERTIFICADOS
+          predicates:
+            - Path=/api/v1/asistencias/**, /api/v1/certificados/**, /api/v1/tipos-participacion/**
+
+        # ── AUTH-SERVICE (Catch-all para usuarios y otros endpoints de v1) ──
+        - id: auth-service-v1
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/api/v1/**
+          metadata:
+            order: 100 # Menor prioridad para que se evalúe al final
+
+        # ── SWAGGER / OPENAPI ───────────────────────────────────────────────
+        - id: auth-service-swagger
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/swagger-ui.html, /swagger-ui/**, /v3/api-docs/**, /webjars/**
+
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${random.uuid}
+    prefer-ip-address: ${EUREKA_INSTANCE_PREFER_IP_ADDRESS:false}
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:gateway-service-gxcghec4aqgzcpfs.mexicocentral-01.azurewebsites.net}
+    non-secure-port-enabled: ${EUREKA_INSTANCE_NONSECURE_PORT_ENABLED:false}
+    secure-port-enabled: ${EUREKA_INSTANCE_SECURE_PORT_ENABLED:true}
+    secure-port: 443
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER_URL:https://eureka-service-a6b0enhtggeqgwd7.mexicocentral-01.azurewebsites.net/eureka/}
+    register-with-eureka: true
+    fetch-registry: true

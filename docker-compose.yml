@@ -1,0 +1,24 @@
+services:
+  gateway-service:
+    build: .
+    container_name: gateway-service
+    ports:
+      - "8082:8082"
+    environment:
+      # Puerto interno
+      - SERVER_PORT=8082
+      
+      # Dependencias externas (Eureka)
+      - EUREKA_URI=${EUREKA_URI:-http://localhost:8761/eureka/}
+      
+      # Hostname para Eureka
+      - GATEWAY_HOSTNAME=${GATEWAY_HOSTNAME:-localhost}
+
+      # CORS
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-*}
+      
+      # Secret para los microservicios
+      - APP_GATEWAY_SECRET=${APP_GATEWAY_SECRET:-3cfa76ef14937c1c0ea519f8fc057a80fcd04a7420f8e8bcd0a7567c272e007b}
+    restart: always
+    env_file:
+      - .env
