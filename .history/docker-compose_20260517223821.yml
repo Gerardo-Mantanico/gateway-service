@@ -3,10 +3,10 @@ services:
     build: .
     container_name: gateway-service
     ports:
-      - "8083:8083"
+      - "8080:8082"
     environment:
       # Puerto interno
-      - SERVER_PORT=8083
+      - SERVER_PORT=8082
   
       # Dependencias externas (Eureka)
       - EUREKA_URI=https://eureka-service-a6b0enhtggeqgwd7.eastus2-01.azurewebsites.net/eureka/
