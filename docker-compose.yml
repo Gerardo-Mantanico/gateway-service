@@ -7,19 +7,20 @@ services:
     environment:
       # Puerto interno
       - SERVER_PORT=8083
-      # Dependencias externas (Eureka)
-      - EUREKA_URI=https://eureka-service-a6b0enhtggeqgwd7.eastus2-01.azurewebsites.net/eureka/
       # Hostname para Eureka
       - GATEWAY_HOSTNAME=20.57.0.243
+      # Dependencias externas (Eureka)
+      - EUREKA_URI=https://eureka-service-a6b0enhtggeqgwd7.eastus2-01.azurewebsites.net/eureka/
+      - EUREKA_SERVER_URL=https://eureka-service-a6b0enhtggeqgwd7.eastus2-01.azurewebsites.net/eureka/
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=https://eureka-service-a6b0enhtggeqgwd7.eastus2-01.azurewebsites.net/eureka/
       - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
       - EUREKA_INSTANCE_NON_SECURE_PORT_ENABLED=true
       - EUREKA_INSTANCE_NON_SECURE_PORT=8083
       - EUREKA_INSTANCE_SECURE_PORT_ENABLED=false
-      # CORS
-      - CORS_ALLOWED_ORIGINS="*"
       # Secret para los microservicios
       - APP_GATEWAY_SECRET=3cfa76ef14937c1c0ea519f8fc057a80fcd04a7420f8e8bcd0a7567c272e007b
-      
+      # CORS
+      - CORS_ALLOWED_ORIGINS="*"
     restart: always
     env_file:
       - .env
