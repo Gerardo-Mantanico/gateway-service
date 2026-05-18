@@ -39,7 +39,7 @@ spring:
         - id: ms-congreso
           uri: lb://CONGRESO-SERVICE
           predicates:
-            - Path=/api/v1/congreso/**
+            - Path=/api/v1/congreso/**, /api/v1/institutions/**, /api/v1/conferences/**, /api/v1/wallet-transactions/**, /api/v1/congress-admins/**, /api/v1/scientific-committee/**
 
         # ── MS-ACTIVITIES ─────────────────────────────────────────────────
         - id: ms-activities
