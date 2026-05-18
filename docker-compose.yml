@@ -7,10 +7,8 @@ services:
     environment:
       # Puerto interno
       - SERVER_PORT=8083
-  
       # Dependencias externas (Eureka)
       - EUREKA_URI=https://eureka-service-a6b0enhtggeqgwd7.eastus2-01.azurewebsites.net/eureka/
-      
       # Hostname para Eureka
       - GATEWAY_HOSTNAME=20.57.0.243
 
