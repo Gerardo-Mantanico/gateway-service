@@ -1,0 +1,59 @@
+name: Deploy Gateway to Azure VM
+
+on:
+    push:
+        branches:
+            - "main"
+    workflow_dispatch:
+
+jobs:
+    build-deploy:
+        runs-on: ubuntu-latest
+        env:
+            DEPLOY_PATH: /opt/gateway-service
+            APP_DIR: gateway-service
+            IMAGE_NAME: gateway-service
+            CONTAINER_NAME: gateway-service
+            HOST_PORT: "8080"
+            CONTAINER_PORT: "8080"
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Prepare remote folder
+              uses: appleboy/ssh-action@v1.0.0
+              with:
+                  host: ${{ secrets.AZURE_VM_HOST }}
+                  username: ${{ secrets.AZURE_VM_USER }}
+                  key: ${{ secrets.AZURE_VM_SSH_KEY }}
+                  port: "22"
+                  envs: DEPLOY_PATH,APP_DIR
+                  script: |
+                      set -e
+                      sudo mkdir -p "$DEPLOY_PATH/$APP_DIR"
+                      sudo chown -R $USER:$USER "$DEPLOY_PATH"
+
+            - name: Copy project to VM
+              uses: appleboy/scp-action@v0.1.7
+              with:
+                  host: ${{ secrets.AZURE_VM_HOST }}
+                  username: ${{ secrets.AZURE_VM_USER }}
+                  key: ${{ secrets.AZURE_VM_SSH_KEY }}
+                  port: "22"
+                  source: "."
+                  target: ${{ env.DEPLOY_PATH }}/${{ env.APP_DIR }}
+
+            - name: Build and run Docker Compose
+              uses: appleboy/ssh-action@v1.0.0
+              with:
+                  host: ${{ secrets.AZURE_VM_HOST }}
+                  username: ${{ secrets.AZURE_VM_USER }}
+                  key: ${{ secrets.AZURE_VM_SSH_KEY }}
+                  port: "22"
+                  envs: DEPLOY_PATH,APP_DIR
+                  script: |
+                      set -e
+                      cd "$DEPLOY_PATH/$APP_DIR"
+                      touch .env
+                      sudo docker compose down || true
+                      sudo docker compose up -d --build

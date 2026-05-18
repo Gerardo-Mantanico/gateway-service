@@ -40,7 +40,7 @@ jobs:
                   username: ${{ secrets.AZURE_VM_USER }}
                   key: ${{ secrets.AZURE_VM_SSH_KEY }}
                   port: "22"
-                  source: ",!/.git"
+                                    source: "."
                   target: ${{ env.DEPLOY_PATH }}/${{ env.APP_DIR }}
 
             - name: Build and run Docker Compose
